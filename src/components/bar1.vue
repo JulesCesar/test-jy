@@ -5,7 +5,7 @@
             <lunbo/>
         </div>
         <div>
-            <biaoge/>
+            <!-- <biaoge/> -->
         </div>
         <div>
             <banner/>
