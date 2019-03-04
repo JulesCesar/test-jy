@@ -50,6 +50,7 @@
                     </div>
 
                 </div>
+                <!-- kline -->
                 <div style="margin-bottom:20px;">
                     <div id="trade-view" style="width: 100%;height: 636px;"></div>
                 </div>
