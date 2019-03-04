@@ -4,6 +4,7 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import Antd from 'ant-design-vue'
+import store from './store'
 
 import './assets/style.css'
 import './assets/style1.css'
@@ -23,6 +24,7 @@ Vue.use(Antd)
 new Vue({
   el: '#app',
   router,
+  store,
   components: { App },
   template: '<App/>'
 })
