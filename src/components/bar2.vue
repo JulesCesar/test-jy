@@ -225,6 +225,12 @@ export default {
                     }
                 })
             }
+            
+            let _url = 'https://kline.biyou.tech/portfolio/query_candle_data?base=BTC&quote=USDT&market=binance&start=1521758257&end=1526374057&interval=2';
+            fetch(_url).then(res => {
+                console.log(res);
+            });
+
        }
     }
 }

@@ -14,7 +14,7 @@
         <a-row>
               <a-col :span="2"> </a-col>
             <a-col :span="6" style="text-align: right;">
-                <img src="../assets/Artboard181.png" alt="" style="width:400px">
+                <!-- <img src="../assets/Artboard181.png" alt="" style="width:400px"> -->
             </a-col>
             <a-col :span="5">
             </a-col>
@@ -41,14 +41,14 @@
             <a-col :span="5">
             </a-col>
             <a-col :span="6"  style="text-align: left;">
-                <img src="../assets/Artboard182.png" alt="" style="width:400px">
+                <!-- <img src="../assets/Artboard182.png" alt="" style="width:400px"> -->
             </a-col>
               <a-col :span="2"> </a-col>
         </a-row>
         <a-row>
               <a-col :span="2"> </a-col>
             <a-col :span="6" style="text-align: right;">
-                <img src="../assets/Artboard183.png" alt="" style="width:400px">
+                <!-- <img src="../assets/Artboard183.png" alt="" style="width:400px"> -->
             </a-col>
             <a-col :span="6">
             </a-col>

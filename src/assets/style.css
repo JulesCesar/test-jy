@@ -229,7 +229,7 @@ height:100%;
 }
 .slidermartheight1{
     position:relative;overflow:hidden;
-    background:url(banner6.jpg) 50% no-repeat;
+    /* background:url(banner6.jpg) 50% no-repeat; */
     /* background-image: url(banner6.jpg); */
     /* background-repeat:no-repeat;  */
     /* background-size:100%; */
@@ -239,12 +239,12 @@ height:100%;
 }
 .slidermartheight2{
     position:relative;overflow:hidden;
-    background:url(banner1.jpg) 50% no-repeat;
+    /* background:url(banner1.jpg) 50% no-repeat; */
     height: 600px;
 }
 .slidermartheight3{
     position:relative;overflow:hidden;
-    background:url(banner2.jpg) 50% no-repeat;
+    /* background:url(banner2.jpg) 50% no-repeat; */
     height: 600px;
 }
 .slidermartheight4{

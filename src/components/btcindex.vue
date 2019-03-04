@@ -6,7 +6,7 @@
                 <a-row>
                     <a-col :span="2" style="text-align:left;">
                         <div class="logo">
-                            <img src="../assets/Artboard19.png" style="width:100%;">
+                            <!-- <img src="../assets/Artboard19.png" style="width:100%;"> -->
                         </div>
                     </a-col>
                     <a-col :span="10">
