@@ -65,7 +65,7 @@
                       <a-col :span="1"></a-col>
                     <a-col :span="11">
                         <div class="logo">
-                            <img src="../assets/Artboard19.png" width="153px">
+                            <!-- <img src="../assets/Artboard19.png" width="153px"> -->
                         </div>
                         <div>
                             <p  style=" font-size: 16px;color: #A5A4A4;padding-left:20px;">安全 稳定 可信 资产交换平台</p>
