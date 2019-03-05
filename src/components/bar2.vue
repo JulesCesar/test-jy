@@ -93,6 +93,8 @@ import { widget as TvWidget } from '../../static/tradingview/charting_library/ch
 // import datafeeds from '../lib/socketDatafeed';
 import {UDFCompatibleDatafeed} from '../../static/tradingview/datafeeds/udf/lib/udf-compatible-datafeed';
 
+import datafeeds from '../lib/socketDatafeed';
+
 
 import mairumaichu from './mairumaichu/index.vue';
 import newdata from './newdata/index.vue';
@@ -102,6 +104,10 @@ import depth from './depth/index.vue';
 import zc from './zc/index.vue';
 import market from './market/index.vue';
 import announcement from './announcement/index.vue';
+
+import {
+    queryKlineData
+} from '../lib/http';
 
 // 图表显示项配置
 const chartDisabledFeatures = [
@@ -143,7 +149,7 @@ export default {
             list:[],
             listStash: [],
             widget: null,
-            datafeeds: new UDFCompatibleDatafeed("https://demo_feed.tradingview.com"),
+            datafeeds: new datafeeds(this),
             // datafeeds: new datafeeds(this),
             // datafeeds: null,
             exchange: null,
@@ -185,7 +191,8 @@ export default {
 
     },
     mounted() { 
-        this.init();
+        // this.init();
+        this.getData();
     },
     computed: {
         
@@ -194,17 +201,15 @@ export default {
     
     }, 
     methods: {
-       init() {
-            // this.exchange = exchange;
-            // this.symbol = symbol
-            // this.interval = interval
-            // this.ticker = `${this.symbol}-${interval}`
+       init(exchange = '', symbol = '', interval = 5) {
+            this.exchange = exchange;
+            this.symbol = symbol
+            this.interval = interval
+            this.ticker = `${this.symbol}-${interval}`
             if (!this.widget) {
                 this.widget = new TvWidget({
-                    // symbol: symbol,
-                    // interval: interval,
-                    symbol: 'AAPL',
-                    interval: 1,
+                    symbol: symbol,
+                    interval: interval,
                     // fullscreen: true,
                     container_id: 'trade-view',
                     datafeed: this.datafeeds,
@@ -227,12 +232,117 @@ export default {
                 })
             }
             
-            let _url = 'https://kline.biyou.tech/portfolio/query_candle_data?base=BTC&quote=USDT&market=binance&start=1521758257&end=1526374057&interval=2';
-            fetch(_url).then(res => {
-                console.log(res);
-            });
 
-       }
+       },
+       getData() {
+           let _start = (new Date().getTime() - 10000000000).toString().substring(0, 10);
+           let _end = new Date().getTime().toString().substring(0, 10);
+           const param = {
+               base: 'BTC',
+               quote: 'USDT',
+               market: 'binance',
+               start: _start,
+               end: _end,
+               interval: 2
+           }
+           this.init('binance', 'btc_usdt', 1);
+           let me = this;
+           queryKlineData(param).then(res => {
+               if (res.status == 200 && res.data.error_message === 'succ') {
+                   me.onHistory(res.data.history_price);
+               }
+           })
+       },
+       onHistory(data) {
+           if (!data.length) return;
+           this.list.splice(0, this.list.length);
+           data.map(item => {
+                this.list.push({
+                    time: item.date * 1000,
+                    open: item.open,
+                    high: item.high,
+                    low: item.low,
+                    close: item.close,
+                    volume: item.volume
+                });
+            });
+            console.log(this.list);
+            this.cacheData[this.ticker] = this.list
+            this.datafeeds.barsUpdater.updateData();
+            let me = this;
+            // let _start = (new Date().getTime() - 10000000000).toString().substring(0, 10);
+            let _end = new Date().getTime().toString().substring(0, 10);
+            const param = {
+                base: 'BTC',
+                quote: 'USDT',
+                market: 'binance',
+                start: _end,
+                end: _end,
+                interval: 2
+            }
+            setInterval(() => {
+                queryKlineData(param).then(res => {
+                    if (res.status == 200 && res.data.error_message == 'succ') {
+                        me.onKData(res.data.history_price);
+                    }
+                });
+            }, 1000);
+       },
+       onKData(data) {
+           if (!data) return;
+           const intervalMode = parseInt(data.date/(60 * this.interval));
+            if (!this.lastInterval || this.lastInterval != intervalMode ) {
+                this.list.push({
+                    time: data.date * 1000,
+                    open: data.open,
+                    high: data.high,
+                    low: data.low,
+                    close: data.close,
+                    volume: data.volume
+                });
+
+                this.lastInterval = intervalMode;
+                this.cacheData[this.ticker] = this.list;
+                this.lastTime = data.date * 1000;
+
+                console.log(this.list.length+"   ts:" + this.lastTime);
+                this.datafeeds.barsUpdater.updateData();
+            }
+            if (data.type && data.symbol === this.symbol) {
+                this.datafeeds.barsUpdater.updateData()
+                const barsData = {
+                time: data.date * 1000,
+                open: data.open,
+                high: data.high,
+                low: data.low,
+                close: data.close,
+                volume: data.volume
+                }
+                if (barsData.time >= this.lastTime && this.cacheData[this.ticker] && this.cacheData[this.ticker].length) {
+                this.cacheData[this.ticker][this.cacheData[this.ticker].length - 1] = barsData
+                }
+            }
+
+       },
+       getBars(symbolInfo, resolution, rangeStartDate, rangeEndDate, onLoadedCallback) {
+            if (this.cacheData[this.ticker] && this.cacheData[this.ticker].length) {
+                this.isLoading = false
+                const newBars = []
+                if (this.lastLength < this.cacheData[this.ticker].length) {
+                for (let i=0; i<this.cacheData[this.ticker].length; i++ ) {
+                    const item = this.cacheData[this.ticker][i];
+                    newBars.push(item)
+                }
+                this.lastLength = this.cacheData[this.ticker].length
+                }
+                onLoadedCallback(newBars)
+            } else {
+                const self = this
+                this.getBarTimer = setTimeout(function () {
+                self.getBars(symbolInfo, resolution, rangeStartDate, rangeEndDate, onLoadedCallback)
+                }, 10)
+            }
+        },
     }
 }
 </script>
